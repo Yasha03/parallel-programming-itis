@@ -8,7 +8,20 @@ using namespace std;
 const int rows = 1400;
 const int cols = 1400;
 
-void matrixMultiply(int matrix[rows][cols], int vect[cols], int answer[rows]) {
+void matrixMultiply1(int matrix[rows][cols], int vect[cols], int answer[rows]) {
+    for (int i = 0; i < rows; i++)
+    {
+        int rowSum = 0;
+        for (int j = 0; j < cols; j++)
+        {
+            rowSum += matrix[i][j] * vect[j];
+        }
+        answer[i] = rowSum;
+    }
+
+}
+
+void matrixMultiply2(int matrix[rows][cols], int vect[cols], int answer[rows]) {
     #pragma omp parallel for
     for (int i = 0; i < rows; i++)
     {
@@ -38,16 +51,15 @@ int main(int argc, char const *argv[])
     }
 
     double start = omp_get_wtime();
-    matrixMultiply(matrix, vect, answer);
+    matrixMultiply1(matrix, vect, answer);
     double end = omp_get_wtime();
     cout << "Последовательное выполнение: " << (end - start) << endl;
 
     start = omp_get_wtime();
 
-    #pragma omp parallel
-    {
-        matrixMultiply(matrix, vect, answer);
-    }
+
+        matrixMultiply2(matrix, vect, answer);
+    
 
     end = omp_get_wtime();
     cout << "Параллельное выполнение: " << (end - start) << endl;
